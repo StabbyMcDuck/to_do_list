@@ -13,6 +13,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     @IBOutlet weak var tableView: UITableView!
     
+    var tField : UITextField!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -36,6 +38,42 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         cell.textLabel!.text = "Do this thing"
         return cell
     }
+    
+    @IBAction func addButtonPressed(sender: AnyObject) {
+        alertPopup()
+    }
+    
+    func saveNewItem(){
+        print("Item saved!")
+    }
+    
+    func configurationTextField(textField: UITextField){
+        textField.placeholder = "Enter new item"
+        self.tField = textField
+    }
+    
+    func alertPopup(){
+        let alert = UIAlertController(title: "Add New Item", message: nil, preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel){
+            UIAlertAction in
+            alert.dismissViewControllerAnimated(true, completion: nil)
+        }
+        
+        let saveAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.Default){
+            UIAlertAction in
+            self.saveNewItem()
+        }
+        alert.addTextFieldWithConfigurationHandler(configurationTextField)
+        alert.addAction(cancelAction)
+        alert.addAction(saveAction)
+        
+        
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+
+    
 
 
 }
