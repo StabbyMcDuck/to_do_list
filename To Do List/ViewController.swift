@@ -14,12 +14,32 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var tableView: UITableView!
     
     var tField : UITextField!
+    var items : [Item] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.tableView.dataSource = self
         self.tableView.delegate = self
+        
+        let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        
+        let request = NSFetchRequest(entityName: "Item")
+        
+        var results : [AnyObject]?
+        
+        do {
+            results = try context.executeFetchRequest(request)
+        } catch _ {
+            results = nil
+        }
+        
+        if results != nil {
+            self.items = results as! [Item]
+        }
+        
+        self.tableView.reloadData()
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,14 +48,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return self.items.count
     
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
+        let item = self.items[indexPath.row]
+        cell.textLabel!.text = item.title
         
-        cell.textLabel!.text = "Do this thing"
         return cell
     }
     
@@ -45,6 +66,35 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func saveNewItem(){
         print("Item saved!")
+        
+        let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        
+        let item = NSEntityDescription.insertNewObjectForEntityForName("Item", inManagedObjectContext: context) as! Item
+        
+        item.title = tField.text
+        
+        do {
+            try context.save()
+        } catch _ {
+            
+        }
+        
+        let request = NSFetchRequest(entityName: "Item")
+        
+        var results : [AnyObject]?
+        
+        do {
+            results = try context.executeFetchRequest(request)
+        } catch _ {
+            results = nil
+        }
+        
+        if results != nil {
+            self.items = results as! [Item]
+        }
+        
+        self.tableView.reloadData()
+        
     }
     
     func configurationTextField(textField: UITextField){
